@@ -1,0 +1,88 @@
+---
+title: "Extra Credit Assignment - Angel Reese"
+author: "Coco Donovan"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction: 
+Angel Reese was a highly regarded recruit coming out of high school, but her 
+first year of college was cut short by injury. In Reese's second year, she 
+averaged a double-double in one of the premier conferences in the NCAA. Reese's
+decided that she wanted a change of scenery for the rest of her college career, 
+so she transferred to LSU. At LSU, had Reese matched her year-two production, 
+she would be a lock for All-American, but in true Angel Reese style, she improved
+yet again. Reese has had a double-double each game this season (in points and 
+total rebounds), which has allowed her to set an SEC record once held by WNBA 
+great Slyvia Fowles. Reese has become a leading contender for National Player of
+the Year. And so, I chose to make Reese the focal subject of this extra credit 
+assignment.
+
+## Necessary Packages
+
+```{r}
+library(dplyr)
+library(rvest)
+library(tidyverse) 
+```
+
+## Downloading the data
+
+```{r}
+angel_url <- 'https://www.sports-reference.com/cbb/players/angel-reese-1/gamelog/2023/#gamelog.html'
+
+angel <- angel_url %>%
+  read_html()  %>%
+  html_nodes('table') %>%
+  html_table(header = TRUE)
+
+angel <- data.frame(angel)
+
+angel <- slice(angel, 1:(n() - 1)) 
+```
+
+## Filtering to Game Date, Total Rebounds
+
+```{r}
+baskets_and_boards <- angel %>%
+  select('Rk', 'Date','TRB', 'PTS')
+
+```  
+
+## Adding the game by game average for Points and Total Rebounds
+
+```{r}
+baskets_and_boards <- baskets_and_boards %>%
+  mutate(game_by_game_pts_avg = round(cummean(PTS),1),
+         game_by_game_trb_avg = round(cummean(TRB),1))
+
+head(baskets_and_boards)
+```
+
+## Adding the 6 Game Mean for Points and Total Rebounds
+
+```{r}
+six_game_mean <- function(column) {
+  if_else(baskets_and_boards$Rk %% 6 == 0,  cummean(column), NULL)
+}
+
+baskets_and_boards <- baskets_and_boards %>%
+  mutate(six_game_pts_avg = round(six_game_mean(PTS),1),
+         six_game_trb_avg = round(six_game_mean(TRB),1))
+
+baskets_and_boards
+```
+
+## Conclusion:
+
+As you can see, Reese's numbers are consistently impressive, which you can see 
+on a game-by-game basis in average and individual score form. I have also 
+provided an average for both total rebounds and points on a six-game basis. 
+These numbers are something to behold, which gives you all the more reason to 
+tune in!
