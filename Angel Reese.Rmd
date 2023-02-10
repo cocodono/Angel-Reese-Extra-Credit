@@ -1,5 +1,5 @@
 ---
-title: "Extra Credit Assignment - Angel Reese"
+title: "Angel Reese Extra Credit"
 author: "Coco Donovan"
 date: "`r Sys.Date()`"
 output:
@@ -35,23 +35,26 @@ library(tidyverse)
 ## Downloading the data
 
 ```{r}
-angel_url <- 'https://www.sports-reference.com/cbb/players/angel-reese-1/gamelog/2023/#gamelog.html'
+angel_url <- 'https://herhoopstats.com/stats/ncaa/player/2023/natl/angel-reese-stats-11eb2f34-d79a-34a4-aa81-12df17ae4e1e/'
 
 angel <- angel_url %>%
   read_html()  %>%
-  html_nodes('table') %>%
+  html_nodes(xpath = '//*[@id="schedule"]/div/div/div/div[1]/div/table') %>%
   html_table(header = TRUE)
 
 angel <- data.frame(angel)
+game_id <- c(1:nrow(angel))
 
-angel <- slice(angel, 1:(n() - 1)) 
+angel$game_id <- game_id
+
+head(angel)
 ```
 
 ## Filtering to Game Date, Total Rebounds
 
 ```{r}
 baskets_and_boards <- angel %>%
-  select('Rk', 'Date','TRB', 'PTS')
+  select('game_id', 'Date','TRB', 'PTS')
 
 ```  
 
@@ -69,14 +72,14 @@ head(baskets_and_boards)
 
 ```{r}
 six_game_mean <- function(column) {
-  if_else(baskets_and_boards$Rk %% 6 == 0,  cummean(column), NULL)
+  if_else(baskets_and_boards$game_id %% 6 == 0,  cummean(column), NULL)
 }
 
 baskets_and_boards <- baskets_and_boards %>%
   mutate(six_game_pts_avg = round(six_game_mean(PTS),1),
          six_game_trb_avg = round(six_game_mean(TRB),1))
 
-baskets_and_boards
+head(baskets_and_boards)
 ```
 
 ## Conclusion:
