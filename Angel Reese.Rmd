@@ -46,8 +46,6 @@ angel <- data.frame(angel)
 game_id <- c(1:nrow(angel))
 
 angel$game_id <- game_id
-
-head(angel)
 ```
 
 ## Filtering to Game Date, Total Rebounds
@@ -62,10 +60,10 @@ baskets_and_boards <- angel %>%
 
 ```{r}
 baskets_and_boards <- baskets_and_boards %>%
-  mutate(game_by_game_pts_avg = round(cummean(PTS),1),
-         game_by_game_trb_avg = round(cummean(TRB),1))
+  mutate(game_pts_avg = round(cummean(PTS),1),
+         game_trb_avg = round(cummean(TRB),1))
 
-head(baskets_and_boards)
+knitr::kable(head(baskets_and_boards))
 ```
 
 ## Adding the 6 Game Mean for Points and Total Rebounds
@@ -79,7 +77,7 @@ baskets_and_boards <- baskets_and_boards %>%
   mutate(six_game_pts_avg = round(six_game_mean(PTS),1),
          six_game_trb_avg = round(six_game_mean(TRB),1))
 
-head(baskets_and_boards)
+knitr::kable(head(baskets_and_boards))
 ```
 
 ## Conclusion:
